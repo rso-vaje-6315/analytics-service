@@ -3,10 +3,9 @@ package si.rso.analytics.persistence;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "samples")
+@Table(name = "analytics")
 @NamedQueries(value = {
-    @NamedQuery(name = AnalyticsEntity.FIND_BY_PRODUCT, query = "SELECT a FROM AnalyticsEntity a " +
-            "WHERE a.numberOfOrders = :numberOfOrders")
+    @NamedQuery(name = AnalyticsEntity.FIND_BY_PRODUCT, query = "SELECT a FROM AnalyticsEntity a WHERE a.productId = :productId")
 })
 public class AnalyticsEntity extends BaseEntity {
 
