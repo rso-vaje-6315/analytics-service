@@ -1,5 +1,8 @@
 package si.rso.analytics.services.impl;
 
+import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import si.rso.analytics.persistence.AnalyticsEntity;
 import si.rso.analytics.services.AnalyticsService;
 import si.rso.analytics.mappers.AnalyticsMapper;
@@ -15,6 +18,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     private EntityManager em;
     
     @Override
+    @Retry
+    @CircuitBreaker
+    @Timeout
     public Analytics getProductAnalytics(String productId){
 
         TypedQuery<AnalyticsEntity> query = em.createNamedQuery(AnalyticsEntity.FIND_BY_PRODUCT, AnalyticsEntity.class)
