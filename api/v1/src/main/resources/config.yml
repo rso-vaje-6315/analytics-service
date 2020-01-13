@@ -40,6 +40,14 @@ kumuluzee:
   discovery:
     consul:
       agent: http://localhost:8500
+  streaming:
+    kafka:
+      consumer:
+        bootstrap-servers: localhost:9092
+        group-id: group1
+        enable-auto-commit: true
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   health:
     servlet:
       mapping: /health/

@@ -66,6 +66,10 @@
             <groupId>com.kumuluz.ee.discovery</groupId>
             <artifactId>kumuluzee-discovery-consul</artifactId>
         </dependency>
+        <dependency>
+            <groupId>si.rso.event.streaming</groupId>
+            <artifactId>event-streaming-utils</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

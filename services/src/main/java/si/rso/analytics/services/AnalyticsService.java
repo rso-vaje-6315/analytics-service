@@ -6,4 +6,6 @@ public interface AnalyticsService {
     
     Analytics getProductAnalytics(String productId);
 
+    void handleMessage(String rawMessage);
+
 }
