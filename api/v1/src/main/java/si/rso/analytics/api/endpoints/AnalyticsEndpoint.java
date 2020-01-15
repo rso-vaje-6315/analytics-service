@@ -7,6 +7,7 @@ import org.eclipse.microprofile.metrics.annotation.Counted;
 import si.rso.analytics.lib.Analytics;
 import si.rso.analytics.lib.AnalyticsStreamConfig;
 import si.rso.analytics.services.AnalyticsService;
+import si.rso.event.streaming.EventStreamMessage;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -34,8 +35,8 @@ public class AnalyticsEndpoint {
 
     @Counted(name = "kafka-number-of-events")
     @StreamListener(topics = {AnalyticsStreamConfig.NOTIFICATIONS_CHANNEL})
-    public void onMessage(ConsumerRecord<String, String> record) {
+    public void onMessage(ConsumerRecord<String, EventStreamMessage> record) {
+
         analyticsService.handleMessage(record.value());
     }
-
 }

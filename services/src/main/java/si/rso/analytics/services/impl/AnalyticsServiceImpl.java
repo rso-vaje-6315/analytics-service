@@ -9,12 +9,10 @@ import si.rso.analytics.services.AnalyticsService;
 import si.rso.analytics.mappers.AnalyticsMapper;
 import si.rso.analytics.lib.Analytics;
 import si.rso.event.streaming.EventStreamMessage;
-import si.rso.event.streaming.EventStreamMessageParser;
 import si.rso.event.streaming.JacksonMapper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.*;
-import java.util.Optional;
 
 @ApplicationScoped
 public class AnalyticsServiceImpl implements AnalyticsService {
@@ -38,30 +36,23 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @CircuitBreaker
     @Timeout
     @Override
-    public void handleMessage(String rawMessage) {
-        Optional<EventStreamMessage> eventStreamMessage = EventStreamMessageParser.decodeMessage(rawMessage);
+    public void handleMessage(EventStreamMessage message) {
+        if (message.getType().equals(AnalyticsStreamConfig.SEND_NOTIFICATION_EVENT_ID)) {
 
-        if (eventStreamMessage.isPresent()) {
+            em.getTransaction().begin();
+            Analytics analytics = JacksonMapper.toEntity(message.getData(), Analytics.class);
 
-            if (eventStreamMessage.get().getType().equals(AnalyticsStreamConfig.SEND_NOTIFICATION_EVENT_ID)) {
+            TypedQuery<AnalyticsEntity> query = em.createNamedQuery(AnalyticsEntity.FIND_BY_PRODUCT, AnalyticsEntity.class)
+                    .setParameter("productId", analytics.getProductId());
 
-                em.getTransaction().begin();
-                AnalyticsEntity analytics = JacksonMapper.toEntity(eventStreamMessage.get().getData(), AnalyticsEntity.class);
+            AnalyticsEntity analyticsEntity = query.getSingleResult();
+            analyticsEntity.setNumberOfOrders(analyticsEntity.getNumberOfOrders() + analytics.getNumberOfOrders());
+            analyticsEntity.setIncome(analyticsEntity.getIncome() + analytics.getIncome());
 
-                TypedQuery<AnalyticsEntity> query = em.createNamedQuery(AnalyticsEntity.FIND_BY_PRODUCT, AnalyticsEntity.class)
-                        .setParameter("productId", analytics.getProductId());
-
-                AnalyticsEntity analyticsEntity = query.getSingleResult();
-                analyticsEntity.setNumberOfOrders(analyticsEntity.getNumberOfOrders() + analytics.getNumberOfOrders());
-                analyticsEntity.setIncome(analyticsEntity.getIncome() + analytics.getIncome());
-
-                em.merge(analyticsEntity);
-                em.getTransaction().commit();
-            } else {
-                // type not handled by this service
-            }
+            em.merge(analyticsEntity);
+            em.getTransaction().commit();
         } else {
-            // badly formed message
+            // type not handled by this service
         }
     }
 

@@ -47,7 +47,7 @@ kumuluzee:
         group-id: group1
         enable-auto-commit: true
         key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: si.rso.event.streaming.serialization.EventStreamMessageDeserializer
   health:
     servlet:
       mapping: /health/
