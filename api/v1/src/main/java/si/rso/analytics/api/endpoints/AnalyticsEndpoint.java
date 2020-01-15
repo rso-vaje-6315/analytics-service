@@ -26,12 +26,13 @@ public class AnalyticsEndpoint {
 
     @GET
     @Path("/{productId}")
-    @Counted(name = "get-greeting-count")
-    public Response getGreetings(@PathParam("productId") String productId) {
+    @Counted(name = "get-analytics-count")
+    public Response getAnalytics(@PathParam("productId") String productId) {
         Analytics analytics = analyticsService.getProductAnalytics(productId);
         return Response.ok(analytics).build();
     }
 
+    @Counted(name = "kafka-number-of-events")
     @StreamListener(topics = {AnalyticsStreamConfig.NOTIFICATIONS_CHANNEL})
     public void onMessage(ConsumerRecord<String, String> record) {
         analyticsService.handleMessage(record.value());
