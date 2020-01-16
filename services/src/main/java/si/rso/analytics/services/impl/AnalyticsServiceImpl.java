@@ -51,11 +51,20 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             TypedQuery<AnalyticsEntity> query = em.createNamedQuery(AnalyticsEntity.FIND_BY_PRODUCT, AnalyticsEntity.class)
                     .setParameter("productId", analytics.getProductId());
 
-            AnalyticsEntity analyticsEntity = query.getSingleResult();
-            analyticsEntity.setNumberOfOrders(analyticsEntity.getNumberOfOrders() + analytics.getNumberOfOrders());
-            analyticsEntity.setIncome(analyticsEntity.getIncome() + analytics.getIncome());
+            try {
+                AnalyticsEntity analyticsEntity = query.getSingleResult();
+                analyticsEntity.setNumberOfOrders(analyticsEntity.getNumberOfOrders() + analytics.getNumberOfOrders());
+                analyticsEntity.setIncome(analyticsEntity.getIncome() + analytics.getIncome());
+                em.merge(analyticsEntity);
+            }
+            catch (NoResultException e){
+                AnalyticsEntity analyticsEntity = new AnalyticsEntity();
+                analyticsEntity.setIncome(analytics.getIncome());
+                analyticsEntity.setNumberOfOrders(analytics.getNumberOfOrders());
+                analyticsEntity.setProductId(analytics.getProductId());
+                em.persist(analyticsEntity);
+            }
 
-            em.merge(analyticsEntity);
             em.getTransaction().commit();
         } else {
             // type not handled by this service

@@ -1,5 +1,7 @@
 package si.rso.analytics.api.endpoints;
 
+import com.kumuluz.ee.logs.LogManager;
+import com.kumuluz.ee.logs.Logger;
 import com.kumuluz.ee.logs.cdi.Log;
 import com.kumuluz.ee.streaming.common.annotations.StreamListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -21,6 +23,7 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AnalyticsEndpoint {
+    private static final Logger LOG = LogManager.getLogger(AnalyticsEndpoint.class.getSimpleName());
     
     @Inject
     private AnalyticsService analyticsService;
@@ -36,7 +39,7 @@ public class AnalyticsEndpoint {
     @Counted(name = "kafka-number-of-events")
     @StreamListener(topics = {AnalyticsStreamConfig.NOTIFICATIONS_CHANNEL})
     public void onMessage(ConsumerRecord<String, EventStreamMessage> record) {
-
+        LOG.info("message consumed");
         analyticsService.handleMessage(record.value());
     }
 }
