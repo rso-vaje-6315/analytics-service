@@ -27,9 +27,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     public Analytics getProductAnalytics(String productId){
 
         TypedQuery<AnalyticsEntity> query = em.createNamedQuery(AnalyticsEntity.FIND_BY_PRODUCT, AnalyticsEntity.class)
-                .setParameter("productId", productId);;
+                .setParameter("productId", productId);
 
-        return AnalyticsMapper.fromEntity(query.getSingleResult());
+        try {
+            Analytics analytics = AnalyticsMapper.fromEntity(query.getSingleResult());
+            return analytics;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Retry
